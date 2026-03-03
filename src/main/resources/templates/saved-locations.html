@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Locations &mdash; Stratus</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-brand-icon">&#x26C5;</div>
+    <span class="nav-brand-name">Stra<span>tus</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+    <li><a href="/locations" class="active"><i class="fa-solid fa-bookmark"></i> Saved</a></li>
+  </ul>
+</nav>
+<main>
+  <div class="container">
+    <div class="page-header">
+      <div class="page-header-row">
+        <div>
+          <h1>&#128205; Saved Locations</h1>
+          <p>Your searched and favorited cities</p>
+        </div>
+        <span class="badge-count" th:text="${locations.size()} + ' cities'">0 cities</span>
+      </div>
+    </div>
+
+    <div th:if="${favorites != null and !favorites.isEmpty()}">
+      <div class="section-title">&#11088; Favorites</div>
+      <div class="locations-grid">
+        <div class="location-card favorite animate-fade-up" th:each="loc : ${favorites}">
+          <div class="location-avatar">&#127998;</div>
+          <div class="location-info">
+            <div class="location-name" th:text="${loc.cityName}">City</div>
+            <div class="location-country" th:text="${loc.country}">Country</div>
+            <div class="location-coords" th:if="${loc.latitude != null}"
+                 th:text="${#numbers.formatDecimal(loc.latitude,1,4) + ', ' + #numbers.formatDecimal(loc.longitude,1,4)}">
+            </div>
+          </div>
+          <div class="location-actions">
+            <a th:href="@{/weather(city=${loc.cityName})}" class="btn-icon" title="View weather">
+              <i class="fa-solid fa-cloud-sun"></i>
+            </a>
+            <form th:action="@{/locations/{id}/favorite(id=${loc.id})}" method="post">
+              <button type="submit" class="btn-icon fav-active" title="Unfavorite">
+                <i class="fa-solid fa-star"></i>
+              </button>
+            </form>
+            <form th:action="@{/locations/{id}/delete(id=${loc.id})}" method="post">
+              <button type="submit" class="btn-icon danger" title="Delete">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;">
+      <div class="section-title">&#128336; All Locations</div>
+      <div th:if="${locations.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">&#127758;</div>
+        <h3>No locations saved yet</h3>
+        <p>Search for a city to automatically save it here.</p>
+        <a href="/" class="btn-primary" style="margin-top:24px;display:inline-flex;">
+          <i class="fa-solid fa-magnifying-glass"></i> Search a city
+        </a>
+      </div>
+      <div class="locations-grid" th:if="${!locations.isEmpty()}">
+        <div class="location-card animate-fade-up"
+             th:each="loc, i : ${locations}"
+             th:classappend="${loc.favorite} ? ' favorite' : ''">
+          <div class="location-avatar">&#127961;</div>
+          <div class="location-info">
+            <div class="location-name" th:text="${loc.cityName}">City</div>
+            <div class="location-country" th:text="${loc.country != null ? loc.country : 'Unknown'}">Country</div>
+            <div class="location-coords" th:if="${loc.latitude != null}"
+                 th:text="${#numbers.formatDecimal(loc.latitude,1,2) + '°N, ' + #numbers.formatDecimal(loc.longitude,1,2) + '°E'}">
+            </div>
+          </div>
+          <div class="location-actions">
+            <a th:href="@{/weather(city=${loc.cityName})}" class="btn-icon">
+              <i class="fa-solid fa-cloud-sun"></i>
+            </a>
+            <form th:action="@{/locations/{id}/favorite(id=${loc.id})}" method="post">
+              <button type="submit" th:class="${loc.favorite} ? 'btn-icon fav-active' : 'btn-icon'">
+                <i th:class="${loc.favorite} ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+              </button>
+            </form>
+            <form th:action="@{/locations/{id}/delete(id=${loc.id})}" method="post">
+              <button type="submit" class="btn-icon danger">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="footer">
+  <span>&copy; 2026 Stratus Weather</span>
+  <a href="/">&#8592; Back to Home</a>
+</footer>
+<script th:src="@{/js/weather.js}"></script>
+</body>
+</html>

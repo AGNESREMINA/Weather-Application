@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stratus — Weather Intelligence</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-brand-icon">&#x26C5;</div>
+    <span class="nav-brand-name">Stra<span>tus</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
+    <li><a href="/locations"><i class="fa-solid fa-bookmark"></i> Saved</a></li>
+  </ul>
+  <span id="live-time" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--text-muted);"></span>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="hero">
+      <div class="hero-eyebrow">&#127757; Real-time Weather Intelligence</div>
+      <h1 class="hero-title">Know your<br><span class="gradient-text">sky, always.</span></h1>
+      <p class="hero-subtitle">Temperature, humidity, wind &amp; 5-day forecasts &mdash; for any city on Earth.</p>
+
+      <form class="search-form" th:action="@{/weather}" method="get">
+        <div class="search-input-wrapper">
+          <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input id="city-search" class="search-input" type="text" name="city"
+                 placeholder="Search any city &mdash; New York, Tokyo, Chennai&hellip;"
+                 autocomplete="off" autofocus>
+        </div>
+        <button class="btn-search" type="submit">
+          <i class="fa-solid fa-arrow-right"></i> Search
+        </button>
+      </form>
+
+      <div class="alert-error" th:if="${error}">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span th:text="${error}">City not found.</span>
+      </div>
+
+      <div th:if="${recentSearches != null and !recentSearches.isEmpty()}">
+        <div class="recent-pills">
+          <a th:each="s : ${recentSearches}"
+             th:href="@{/weather(city=${s.cityName})}" class="recent-pill">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size:11px;opacity:.6;"></i>
+            <span th:text="${s.cityName}">City</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section th:if="${favoriteLocations != null and !favoriteLocations.isEmpty()}" style="padding-bottom:60px;">
+      <div class="section-title">&#11088; Favorite Locations</div>
+      <div class="locations-grid">
+        <a th:each="loc : ${favoriteLocations}"
+           th:href="@{/weather(city=${loc.cityName})}"
+           class="location-card favorite" style="text-decoration:none;color:inherit;">
+          <div class="location-avatar">&#127750;</div>
+          <div class="location-info">
+            <div class="location-name" th:text="${loc.cityName}">City</div>
+            <div class="location-country" th:text="${loc.country}">Country</div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);"></i>
+        </a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <span>&copy; 2026 Stratus Weather. Powered by
+    <a href="https://openweathermap.org" target="_blank">OpenWeatherMap</a>
+  </span>
+  <span>Built with Spring Boot + Thymeleaf</span>
+</footer>
+
+<script th:src="@{/js/weather.js}"></script>
+</body>
+</html>

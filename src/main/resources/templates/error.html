@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error &mdash; Stratus</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-brand-icon">&#x26C5;</div>
+    <span class="nav-brand-name">Stra<span>tus</span></span>
+  </a>
+</nav>
+<main>
+  <div class="container">
+    <div class="empty-state" style="padding:120px 24px;">
+      <div class="empty-state-icon">&#9888;</div>
+      <h3 th:text="${status != null ? status + ' Error' : 'Something went wrong'}">Error</h3>
+      <p th:text="${message != null ? message : 'An unexpected error occurred. Please try again.'}">Error details</p>
+      <a href="/" class="btn-primary" style="margin-top:32px;display:inline-flex;">&#8592; Back to Home</a>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${weather.name} + ' &mdash; Stratus'">Weather</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-brand-icon">&#x26C5;</div>
+    <span class="nav-brand-name">Stra<span>tus</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+    <li><a href="/locations"><i class="fa-solid fa-bookmark"></i> Saved</a></li>
+  </ul>
+  <form th:action="@{/weather}" method="get" style="display:flex;gap:8px;">
+    <div class="search-input-wrapper" style="max-width:280px;">
+      <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <input class="search-input" type="text" name="city" placeholder="Search another city&hellip;"
+             style="padding:10px 14px 10px 42px;font-size:14px;">
+    </div>
+    <button class="btn-search" type="submit" style="padding:10px 18px;font-size:14px;">Go</button>
+  </form>
+</nav>
+
+<main>
+  <div class="container">
+    <section class="weather-hero animate-fade-up">
+
+      <!-- Main weather card -->
+      <div class="weather-main-card">
+        <div class="weather-location">
+          <i class="fa-solid fa-location-dot" style="color:var(--accent-rose);"></i>
+          <span th:text="${weather.name + ', ' + weather.sys.country}">City, IN</span>
+        </div>
+        <div class="weather-temp-row">
+          <div class="weather-temp"
+               th:text="${#numbers.formatDecimal(weather.main.temp,1,0) + '°'}">22°</div>
+          <img class="weather-icon-large"
+               th:src="${weather.iconUrl}" th:alt="${weather.weatherMain}">
+        </div>
+        <div class="weather-description" th:text="${weather.weatherDescription}">Clear sky</div>
+        <div class="weather-feels"
+             th:text="'Feels like ' + ${#numbers.formatDecimal(weather.main.feelsLike,1,0)} + '°C'">
+        </div>
+        <div class="weather-minmax">
+          <div class="temp-badge high">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span th:text="${#numbers.formatDecimal(weather.main.tempMax,1,0) + '°C'}"></span>
+          </div>
+          <div class="temp-badge low">
+            <i class="fa-solid fa-arrow-down"></i>
+            <span th:text="${#numbers.formatDecimal(weather.main.tempMin,1,0) + '°C'}"></span>
+          </div>
+        </div>
+        <!-- Sunrise / Sunset -->
+        <div class="sun-card" style="margin-top:20px;padding:16px 20px;">
+          <div class="sun-item">
+            <div class="sun-label">&#127749; Sunrise</div>
+            <div class="sun-time"
+                 th:text="${#dates.format(new java.util.Date(weather.sys.sunrise * 1000),'HH:mm')}">
+            </div>
+          </div>
+          <div class="sun-divider"></div>
+          <div class="sun-item">
+            <div class="sun-label">&#127751; Sunset</div>
+            <div class="sun-time" style="color:var(--accent-rose);"
+                 th:text="${#dates.format(new java.util.Date(weather.sys.sunset * 1000),'HH:mm')}">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats-grid animate-fade-up animate-delay-1">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(6,182,212,.1);color:var(--accent-cyan);">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+          <div class="stat-label">Humidity</div>
+          <div class="stat-value">
+            <span th:text="${weather.main.humidity}">65</span><span class="stat-unit">%</span>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill"
+                 th:data-width="${weather.main.humidity}"
+                 style="background:linear-gradient(90deg,#06b6d4,#3b82f6);width:0%;"></div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(16,185,129,.1);color:var(--accent-green);">
+            <i class="fa-solid fa-wind"></i>
+          </div>
+          <div class="stat-label">Wind Speed</div>
+          <div class="stat-value">
+            <span th:text="${#numbers.formatDecimal(weather.wind.speed,1,1)}">5.2</span>
+            <span class="stat-unit">m/s</span>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill"
+                 th:data-width="${weather.wind.speed * 3}"
+                 style="background:linear-gradient(90deg,#10b981,#06b6d4);width:0%;"></div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(245,158,11,.1);color:var(--accent-amber);">
+            <i class="fa-solid fa-gauge-high"></i>
+          </div>
+          <div class="stat-label">Pressure</div>
+          <div class="stat-value">
+            <span th:text="${weather.main.pressure}">1013</span><span class="stat-unit">hPa</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(79,70,229,.1);color:#818cf8;">
+            <i class="fa-solid fa-eye"></i>
+          </div>
+          <div class="stat-label">Visibility</div>
+          <div class="stat-value">
+            <span th:text="${weather.visibility != null ? weather.visibility / 1000 : 'N/A'}">10</span>
+            <span class="stat-unit" th:if="${weather.visibility != null}">km</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5-Day Forecast -->
+    <section th:if="${forecast != null and !forecast.isEmpty()}"
+             class="animate-fade-up animate-delay-2">
+      <div class="section-title">&#128197; 5-Day Forecast</div>
+      <div class="forecast-grid">
+        <div class="forecast-card" th:each="day : ${forecast}">
+          <div class="forecast-day" th:text="${#strings.substring(day.dtTxt,0,10)}">Day</div>
+          <img class="forecast-icon" th:src="${day.iconUrl}" th:alt="${day.weatherDescription}">
+          <div class="forecast-desc" th:text="${day.weatherDescription}">Clear</div>
+          <div class="forecast-temps">
+            <span class="forecast-high"
+                  th:text="${#numbers.formatDecimal(day.main.tempMax,1,0) + '°'}">25°</span>
+            <span class="forecast-low"
+                  th:text="${#numbers.formatDecimal(day.main.tempMin,1,0) + '°'}">18°</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wind extras row -->
+    <section class="animate-fade-up animate-delay-3"
+             th:if="${weather.wind != null}"
+             style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px;">
+      <div class="stat-card" style="display:flex;align-items:center;gap:20px;">
+        <div class="stat-icon" style="width:56px;height:56px;font-size:24px;background:rgba(16,185,129,.1);color:var(--accent-green);">
+          <i class="fa-solid fa-compass"></i>
+        </div>
+        <div>
+          <div class="stat-label">Wind Direction</div>
+          <div class="stat-value" style="font-size:22px;"
+               th:text="${weather.wind.deg + '°'}">180°</div>
+        </div>
+      </div>
+      <div class="stat-card" th:if="${weather.wind.gust != null}" style="display:flex;align-items:center;gap:20px;">
+        <div class="stat-icon" style="width:56px;height:56px;font-size:24px;background:rgba(244,63,94,.1);color:var(--accent-rose);">
+          <i class="fa-solid fa-tornado"></i>
+        </div>
+        <div>
+          <div class="stat-label">Wind Gust</div>
+          <div class="stat-value" style="font-size:22px;">
+            <span th:text="${#numbers.formatDecimal(weather.wind.gust,1,1)}">8.4</span>
+            <span class="stat-unit">m/s</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <span>&copy; 2026 Stratus Weather. Powered by
+    <a href="https://openweathermap.org" target="_blank">OpenWeatherMap</a>
+  </span>
+  <a href="/">&#8592; Back to Home</a>
+</footer>
+<script th:src="@{/js/weather.js}"></script>
+</body>
+</html>
